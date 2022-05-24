@@ -95,6 +95,69 @@ const DeleteUser = async (req,res) => {
     })
 }
 
+const login = async (req, res, next) => {
+    // console.log(req)
+    let userSearch = await user.findOne({ UserID: req.body.UserID })
+    if (userSearch) {
+        console.log(userSearch.password)
+        let Passwordcheck = await bcrypt.compare(req.body.password, userSearch.password)
+        if (Passwordcheck) {
+            if (userSearch.token) {
+                res.header('auth-token', userSearch.token)
+                req.body.token = userSearch.token
+                auth.verifyToken(req, res, next)
+            } else {
+                let UserID = req.body.UserID
+                let token = jwt.sign(
+                    { UserID: user._id, UserID },
+                    process.env.TOKEN_KEY,
+                    { expiresIn: "1h" }
+                )
+                let data = {
+                    token: token
+                }
+                //console.log(token)
+                user.findOneAndUpdate({ UserID }, { $set: data })
+                    .then(() => {
+                        res.header('auth-token', token).send("Login sccesss")
+                    })
+                    .catch(err => {
+                        res.json({
+                            message: 'error'
+                        })
+                    })
+            }
+        } else {
+            res.json({
+                message: "Login fail"
+            })
+        }
+    }else{
+        res.json({
+            message: "User not found"
+        })
+    }
+}
+
+const editPassword = async (req, res) => {
+    let UserID = req.body.UserID
+    let Password = await bcrypt.hash(req.body.password, 10)
+    let data = {
+        password: Password
+    }
+    user.findOneAndUpdate({ UserID }, { $set: data })
+        .then(() => {
+            res.json({
+                message: 'Password updated Successfully'
+            })
+        })
+        .catch(err => {
+            res.json({
+                message: 'error'
+            })
+        })
+}
+
 module.exports = {
-    index,createStudent,createTeacher,createLeader,DeleteUser
+    index,createStudent,createTeacher,createLeader,DeleteUser,login,editPassword
 }
