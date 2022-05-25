@@ -1,5 +1,5 @@
 const subject = require('../models/subject_model')
-
+const register = require('../models/register_model')
 const index = (req,res)=>{
     subject.find({},(err,subjects)=>{
         if(err) res.send(err)
@@ -100,7 +100,24 @@ const DeleteSubject = async (req, res) => {
     })
 }
 
+const findbyUser = async (req,res) => {
+    let UserID_ = req.body.UserID
+    let Data = []
+    await register.find({UserID: UserID_})
+    .then(async subjects =>{
+        console.log(subjects[0].SubjectID)
+        for(let i=0;i<subjects.length;i++){
+            Data[i] = await subject.findOne({
+                SubjectID: subjects[i].SubjectID
+            })
+        }
+        if(Data) res.json(Data)
+    }).catch(err => {
+        json.error(err)
+    })
+}                   
+
 
 module.exports = {
-    index,createSubject,DeleteSubject
+    index,createSubject,DeleteSubject,findbyUser
 }
