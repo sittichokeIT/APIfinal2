@@ -2,7 +2,6 @@ const register = require('../models/register_model')
 const subject = require('../models/subject_model')
 const createRegister = async (req,res) => {
     let registers = new register({
-        RegisterID: req.body.RegisterID,
         UserID: req.body.UserID,
         SubjectID: req.body.SubjectID,
         SectionNo: req.body.SectionNo
@@ -107,6 +106,31 @@ const DeleteRegister = async (req,res) => {
         })
     })
 }
+
+const findtermandyear = async (req, res) => {
+    let UserID_ = req.body.UserID
+    let term_ = req.body.Term
+    let year_ = req.body.Year
+    let Data = []
+    await register.find({
+        UserID: UserID_
+    }).then(async subjects => {
+        for(let i=0;i<subjects.length;i++){
+            Data[i] = await subject.findOne({
+                $and: [{
+                    SubjectID: subjects[i].SubjectID,
+                    SectionNo: subjects[i].SectionNo,
+                    Term: term_,
+                    Year: year_
+                }]
+            })
+        }
+        if(Data) res.json(Data)
+    }).catch(err =>{
+        console.log(err)
+    })
+}
+
 module.exports = {
-    createRegister,UpdateRegister,DeleteRegister
+    createRegister,UpdateRegister,DeleteRegister,findtermandyear
 }

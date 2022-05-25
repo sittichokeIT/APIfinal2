@@ -72,7 +72,6 @@ const createLeader = async (req, res) => {
         password: Password,
         address: req.body.address,
         telno: req.body.telno,
-        token: token
     })
     users.save()
         .then(response => {
@@ -118,7 +117,7 @@ const login = async (req, res, next) => {
             let data = {
                 token: token
             }
-            //console.log(token)
+            console.log(token)
             user.findOneAndUpdate({ UserID }, { $set: data })
                 .then(() => {
                     let status = userSearch.status
