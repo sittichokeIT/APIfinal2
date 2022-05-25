@@ -4,6 +4,7 @@ const user = require('../models/user_model')
 const config = process.env;
 
 const verifyToken = (req, res, next) => {
+    //console.log(req)
     const token = req.body.token || req.query.token || req.header('auth-token');
     //console.log(token)
     if (!token) {
@@ -13,7 +14,8 @@ const verifyToken = (req, res, next) => {
     try {
         decode = jwt.verify(token, process.env.TOKEN_KEY)
         req.user = decode
-        return res.status(200).send()
+        //console.log(req.user.UserID) 
+        return req.user.UserID
         //next()
     } catch (e) {
         let UserID = req.body.UserID

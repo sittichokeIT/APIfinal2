@@ -72,7 +72,6 @@ const createLeader = async (req, res) => {
         password: Password,
         address: req.body.address,
         telno: req.body.telno,
-        token: token
     })
     users.save()
         .then(response => {
@@ -119,19 +118,27 @@ const login = async (req, res, next) => {
                 token: token
             }
             //console.log(token)
+            req.body.token = token
             user.findOneAndUpdate({ UserID }, { $set: data })
-                .then(() => {
-                    let status = userSearch.status
-                    res.json({
-                        message: status
-                    })
+            .then(() => {
+                let status = userSearch.status
+                // res.json({
+                //     message: status
+                // })
+                let id = auth.verifyToken(req, res)
+                console.log(id)
+                res.header('auth-token', token).json({
+                    message: status,
+                    auth_token: token,
+                    UserID: id
                 })
-                .catch(err => {
-                    res.json({
-                        message: 'error'
-                    })
+            })
+            .catch(err => {
+                res.json({
+                    message: 'error'
                 })
-            }else {
+            })
+        }else {
             res.json({
                 message: "Login fail"
             })
