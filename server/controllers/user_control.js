@@ -126,8 +126,8 @@ const login = async (req, res, next) => {
                 //     message: status
                 // })
                 let id = auth.verifyToken(req, res)
-                console.log(id)
-                res.header('auth-token', token).json({
+                //console.log(id)
+                res.status(200).json({
                     message: status,
                     auth_token: token,
                     UserID: id

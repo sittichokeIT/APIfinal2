@@ -108,6 +108,7 @@ const DeleteRegister = async (req,res) => {
 }
 
 const findtermandyear = async (req, res) => {
+    //console.log(req)
     let UserID_ = req.body.UserID
     let term_ = req.body.Term
     let year_ = req.body.Year
