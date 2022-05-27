@@ -108,14 +108,12 @@ const DeleteRegister = async (req,res) => {
 }
 
 const findtermandyear = async (req, res) => {
-    //console.log(req)
     let UserID_ = req.body.UserID
     let term_ = req.body.Term
-    let year_ = req.body.Year
+    let year_ = req.body.year
     let Data = []
-    await register.find({
-        UserID: UserID_
-    }).then(async subjects => {
+    await register.find({UserID: UserID_})
+    .then(async subjects => {
         for(let i=0;i<subjects.length;i++){
             Data[i] = await subject.findOne({
                 $and: [{
@@ -126,7 +124,9 @@ const findtermandyear = async (req, res) => {
                 }]
             })
         }
-        if(Data) res.json(Data)
+        //console.log(Data[0])
+        if(Data[0] != null) res.json(Data)
+        else res.json({ message: "Error" })
     }).catch(err =>{
         console.log(err)
     })

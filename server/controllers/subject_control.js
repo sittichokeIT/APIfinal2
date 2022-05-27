@@ -105,7 +105,7 @@ const findbyUser = async (req,res) => {
     let Data = []
     await register.find({UserID: UserID_})
     .then(async subjects =>{
-        console.log(subjects[0].SubjectID)
+        //console.log(subjects[0].SubjectID)
         for(let i=0;i<subjects.length;i++){
             Data[i] = await subject.findOne({
                 SubjectID: subjects[i].SubjectID

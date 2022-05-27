@@ -29,9 +29,9 @@ const verifyToken = (req, res, next) => {
             //console.log(token)
             user.findOneAndUpdate({ UserID }, { $set: data })
             .then(() => {
-                //console.log(e)
+                console.log(e)
                 //res.header('auth-token', token).send("Token expires and create")
-                return res.status(401).send("Token expires")
+                return "Token expires"
             })
             .catch(err => {
                 res.json({
@@ -44,8 +44,10 @@ const verifyToken = (req, res, next) => {
         try {
             decode = jwt.verify(token, process.env.TOKEN_KEY)
             req.user = decode
-            console.log(req.user.UserID) 
-            return res.status(200).send(req.user.UserID)
+            //console.log(req.user.UserID) 
+            return res.json({
+                message: req.user.UserID
+            })
             //next()
         } catch (e) {
             let UserID = req.body.UserID
@@ -58,7 +60,9 @@ const verifyToken = (req, res, next) => {
             .then(() => {
                 //console.log(e)
                 //res.header('auth-token', token).send("Token expires and create")
-                return res.status(401).send("Token expires")
+                return res.json({
+                    message: "Token expires"
+                })
             })
             .catch(err => {
                 res.json({

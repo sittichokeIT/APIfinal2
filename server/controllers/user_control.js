@@ -112,7 +112,7 @@ const login = async (req, res, next) => {
             let token = jwt.sign(
                 { UserID: user._id, UserID },
                 process.env.TOKEN_KEY,
-                { expiresIn: "1h" }
+                { expiresIn: "5m" }
             )
             let data = {
                 token: token
@@ -127,10 +127,11 @@ const login = async (req, res, next) => {
                 // })
                 let id = auth.verifyToken(req, res)
                 //console.log(id)
-                res.status(200).json({
+                return res.json({
                     message: status,
                     auth_token: token,
-                    UserID: id
+                    UserID: id,
+                    Name: userSearch.firstname
                 })
             })
             .catch(err => {
