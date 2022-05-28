@@ -11,11 +11,11 @@ const index = (req,res,next)=>{
     })
 }
 
-const createStudent = async (req, res) => {
+const createUser = async (req, res) => {
     let Password = await bcrypt.hash(req.body.password, 10)
     let users = await user({
         UserID: req.body.UserID,
-        status: "Student",
+        status: req.body.status,
         firstname: req.body.firstname,
         lastname: req.body.lastname,
         email: req.body.email,
@@ -31,57 +31,7 @@ const createStudent = async (req, res) => {
         })
         .catch(err => {
             res.json({
-                message: 'Student added Error!'
-            })
-        })
-}
-
-const createTeacher = async (req, res) => {
-    let Password = await bcrypt.hash(req.body.password, 10)
-    let users = new user({
-        UserID: req.body.UserID,
-        status: "Teacher",
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        email: req.body.email,
-        password: Password,
-        address: req.body.address,
-        telno: req.body.telno,
-    })
-    users.save()
-        .then(response => {
-            res.json({
-                message: 'Teacher added Successfully!'
-            })
-        })
-        .catch(err => {
-            res.json({
-                message: 'Teacher added Error!'
-            })
-        })
-}
-
-const createLeader = async (req, res) => {
-    let Password = await bcrypt.hash(req.body.password, 10)
-    let users = new user({
-        UserID: req.body.UserID,
-        status: "Leader",
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        email: req.body.email,
-        password: Password,
-        address: req.body.address,
-        telno: req.body.telno,
-    })
-    users.save()
-        .then(response => {
-            res.json({
-                message: 'Leader added Successfully!'
-            })
-        })
-        .catch(err => {
-            res.json({
-                message: 'Leader added Error!'
+                message: 'Error'
             })
         })
 }
@@ -171,5 +121,5 @@ const editPassword = async (req, res) => {
 }
 
 module.exports = {
-    index,createStudent,createTeacher,createLeader,DeleteUser,login,editPassword
+    index,createUser,DeleteUser,login,editPassword
 }
