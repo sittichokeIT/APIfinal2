@@ -1,13 +1,15 @@
 const subject = require('../models/subject_model')
 const register = require('../models/register_model')
-const index = (req,res)=>{
-    subject.find({},(err,subjects)=>{
-        if(err) res.send(err)
+const user = require('../models/user_model')
+
+const index = (req, res) => {
+    subject.find({}, (err, subjects) => {
+        if (err) res.send(err)
         res.json(subjects)
     })
 }
 
-const createSubject = async (req,res) => {
+const createSubject = async (req, res) => {
     let subjects = new subject({
         SubjectID: req.body.SubjectID,
         SubjectName: req.body.SubjectName,
@@ -35,7 +37,7 @@ const createSubject = async (req,res) => {
                 MidtermDate: subjects.MidtermDate,
                 FinalDate: subjects.FinalDate,
                 Term: subjects.Term,
-                Year: subjects.Year,               
+                Year: subjects.Year,
             }]
         }
     )
@@ -64,60 +66,133 @@ const createSubject = async (req,res) => {
             }]
         }
     )
-    if(checkAll&&checkRoom&&checkSec){
+    if (checkAll && checkRoom && checkSec) {
         res.json({
             message: 'No'
         })
     }
-    else{
+    else {
         subjects.save()
-        .then(response => {
-            res.json({
-                message: 'Subject added Successfully!'
+            .then(response => {
+                res.json({
+                    message: 'Subject added Successfully!'
+                })
             })
-        })
-        .catch(err => {
-            res.json({
-                message: 'Subject added Error!'
+            .catch(err => {
+                res.json({
+                    message: 'Subject added Error!'
+                })
             })
-        }) 
     }
-    
+
 }
 
 const DeleteSubject = async (req, res) => {
     let subjectID_ = req.body.SubjectID
-    subject.findOneAndRemove({SubjectID: subjectID_})
-    .then(() =>{
-        res.json({
-            message: `Delete subject id ${subjectID_} succeccfully!`
+    subject.findOneAndRemove({ SubjectID: subjectID_ })
+        .then(() => {
+            res.json({
+                message: `Delete subject id ${subjectID_} succeccfully!`
+            })
         })
-    })
-    .catch(err => {
-        res.json({
-            message: 'Delete subject Error'
+        .catch(err => {
+            res.json({
+                message: 'Delete subject Error'
+            })
         })
-    })
 }
 
-const findbyUser = async (req,res) => {
+const findbyUser = async (req, res) => {
     let UserID_ = req.body.UserID
     let Data = []
-    await register.find({UserID: UserID_})
-    .then(async subjects =>{
-        //console.log(subjects[0].SubjectID)
-        for(let i=0;i<subjects.length;i++){
-            Data[i] = await subject.findOne({
-                SubjectID: subjects[i].SubjectID
-            })
-        }
-        if(Data) res.json(Data)
+    await register.find({ UserID: UserID_ })
+        .then(async subjects => {
+            //console.log(subjects[0].SubjectID)
+            for (let i = 0; i < subjects.length; i++) {
+                Data[i] = await subject.findOne({
+                    SubjectID: subjects[i].SubjectID
+                })
+            }
+            if (Data) res.json(Data)
+        }).catch(err => {
+            json.error(err)
+        })
+}
+
+const findTeachbyUser = async (req, res) => {
+    //console.log(req.body)
+    let _UserID = req.body.UserID
+    let _term = req.body.Term
+    let _year = req.body.year
+    //console.log(_UserID + " " + _term + " " + _year)
+    await register.find({ UserID: _UserID })
+        .then(async () => {
+            console.log(_UserID + " " + _term + " " + _year)
+            Data = await subject.find({
+                $and: [{
+                    UserID: _UserID,
+                    Term: _term,
+                    Year: _year
+                }]
+            }) 
+            console.log(await subject.find({
+                $and: [{
+                    UserID: _UserID,
+                    Term: _term,
+                    Year: _year
+                }]
+            }) );
+            if (Data.length > 0) res.json(Data)
+            else res.json({ message: "Error" })
+        }).catch(err => {
+            json.error(err)
+        })
+}
+
+const findSec = async (req, res) => {
+    let _UserID = req.body.UserID
+    let _term = req.body.Term
+    let _year = req.body.year
+    let _SubjectID = req.body.SubjectID
+    await register.find({ UserID: _UserID})
+    .then(async () => {
+        Data = await subject.find({
+            $and: [{
+                UserID: _UserID,
+                Term: _term,
+                Year: _year,
+                SubjectID: _SubjectID
+            }]
+        })
+        //console.log(Data.length);
+        if (Data.length > 0) res.json(Data)
+        else res.json({ message: "Error" })
     }).catch(err => {
         json.error(err)
     })
-}                   
+}
+
+const getStudent = async (req, res) => {
+    let _SubjectID = req.body.SubjectID
+    let _Sec = req.body.SectionNo
+    await register.find({ SubjectID: _SubjectID })
+    .then(async () => {
+        Data = await register.find({
+            $and: [{
+                SubjectID: _SubjectID,
+                SectionNo: _Sec
+            }]
+        })
+        //console.log(Data)
+        if (Data.length > 0) res.json(Data)
+        else res.json({ message: "Error" })
+    }).catch(err => {
+        //console.log(err);
+        json.error(err)
+    })
+}
 
 
 module.exports = {
-    index,createSubject,DeleteSubject,findbyUser
+    index, createSubject, DeleteSubject, findbyUser, findTeachbyUser, findSec, getStudent
 }

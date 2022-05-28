@@ -14,11 +14,9 @@ app.use(cors())
 //routes
 const userRouter = require('./routes/user_route')
 const subjectRouter = require('./routes/subject_route')
-const sectionRouter = require('./routes/section_route')
 const registerRouter = require('./routes/register_route')
 app.use('/api/user',userRouter)
 app.use('/api/subject',subjectRouter)
-app.use('/api/section',sectionRouter)
 app.use('/api/register',registerRouter)
 
 app.listen(port, () => console.log(`Running on port ${port}`))
